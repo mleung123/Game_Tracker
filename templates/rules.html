@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title> Rules </title>
+{% endblock %}
+
+
+
+
+
+{% block body %}
+
+<h1> Rules </h1>
+    <p>When a new player joins, they are put into the back of the queue.</p>
+    <br>
+    <p>
+        If it is the first game, then the winning team gets to stay. The losing team will be put back into queue,
+        preserving their order within the team(i.e. the player in position one on the team will be the person with the highest priority of all those team members in the queue)
+
+        Otherwise, players will go back into queue after playing two games.
+    </p>
+    <br>
+    <h4>Sitting Out</h4>
+    <p> 
+        Players should only sit out if they are participating in an ongoing game. A player that is currently on a team can decide to sit out. 
+        If they do, they swap places with the person at the front of the queue. 
+        At the end of that game, the player who was subbing in is put back at the front of the queue, and the player that was sitting out either goes in the back of the queue or back onto the team, 
+        depending on their number of conecutive games.
+
+        While there may be certain cases (i.e. someone decides to sit out right after a game starts) where a game that a player sat out for shouldn't be counted, 
+        this isn't currently covered by the app. In such a case, use swap player or another debug function as neccessary.
+    </p>
+    <h4>Debug Functions</h4>
+    <p>Since this app's logic doesn't cover every single possible scenario, it also contains a few options for manually setting controls(currently only swap player). Please do not abuse these.  </p>
+    <a href = '/'>Back to Tracker</a>
+<h3></h3>
+{% endblock %}

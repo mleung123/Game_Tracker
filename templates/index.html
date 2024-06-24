@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player Tracker</title>
+</head>
+<body>
+    <h1>Player Tracker</h1>
+
+    {% if game_ongoing %}
+    <h3> Game currently ongoing!</h3>
+    {% endif %}
+
+    <h2>Queue</h2>
+    <table border="1">
+        <tr>
+            <th>Position</th>
+            <th>Name</th>
+            
+            <th>Id</th>
+        </tr>
+        {% for player in queue%}
+        <tr>
+            <td>{{ player.position }}</td>
+            <td>{{ player.name }}</td>
+            
+            <td>{{ player.id }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h2>Team 1</h2>
+    <table border="1">
+        <tr>
+            <th>Position</th>
+            <th>Player Name</th>
+            <th>Consecutive Games</th>
+            <th>Subbing In</th>
+        </tr>
+        {% for player in team1 %}
+        <tr>
+            <td>{{ player.position_in_team }}</td>
+            <td>{{ player.name }}</td>
+            <td>{{ player.consec_games }}</td>
+            <td>{{ player.subbing_in }}</td>
+
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h2>Team 2</h2>
+    <table border="1">
+        <tr>
+            <th>Position</th>
+            <th>Player Name</th>
+            <th>Consecutive Games</th>
+            <th>Subbing In</th>
+        </tr>
+        {% for player in team2 %}
+        <tr>
+            <td>{{ player.position_in_team }}</td>
+            <td>{{ player.name }}</td>          
+            <td>{{ player.consec_games }}</td>
+            <td>{{ player.subbing_in }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h2>Sitting Out</h2>
+    <table border="1">
+        <tr>
+            <th>Player Name</th>
+        </tr>
+        {% for player in sitting_out %}
+        <tr>
+            <td>{{ player.name }}</td>
+            <td>{{ position_sitting_out }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h2>Players List</h2>
+    <table border="1">
+        
+        <tr>
+            {% for col in column_names %}
+            <th>{{ col }}</th>
+            {% endfor %}
+        </tr>
+        {% for player in players %}
+        
+        <tr>
+            {% for col in column_names %}
+            <td>{{ getattr(player, col) }}</td>
+            {% endfor %}
+        </tr>
+        
+        {% endfor %}
+    </table>
+
+    <div class="add_player">
+        <form action="/add_player" method="POST" id = add_player>
+            <label for="name">Name:</label><br>
+            <input type="text" name="name" id="name" required> <br>
+            <input type="submit" value="Add Player">
+        </form>
+    </div>
+    
+    <div class="start_game">
+        {% if game_ongoing %}
+            <!-- <p>Game currently ongoing!</p>  -->
+        {% elif sufficient_players %}
+            <p> Insufficient Players to start a game!</p>
+        {% else %}
+        <form action="/start_game" method="POST" id = "start_game">
+            <input type="submit" value="Start">
+        </form>
+        {% endif %}
+        
+    </div>
+
+    <div class="end_game">
+        
+        <h3>End Game:</h3>
+        {% if game_ongoing %}
+        {% if is_first_game %}
+        <p> Who won?</p>
+        <form action="/end_game" method="POST">
+            <input type="radio" id="Team 1" name="winner" value="1">
+            <label for="Team 1">Team 1</label>
+            <br>
+            <input type="radio" id="Team 2" name="winner" value="2">
+            <label for="Team 2">Team 2</label>
+            <br>
+            <input type="submit" value="Submit">
+        </form>
+        {% else %}
+        <form action="/end_game" method="POST">
+            <input type="submit" value="Submit">
+        </form>
+        {% endif %}
+        {% else %}
+        <p> No game currently ongoing.</p>
+        {% endif %}
+    </div>
+
+    <div class="remove_player">
+        <form action="/remove_player" method="POST">
+        
+        <label for="name">Select Player to Remove:</label>
+        <select name="name" id="name">
+            {% for player in players %}
+            <option value="{{ player.id }}">{{ player.name }}</option>
+            
+            {% endfor %}
+            <input type="submit" value="Submit">
+        </select>
+        </form>
+    </div>
+
+    <div class="sit_out">
+        <form action="/sit_out" method="POST">
+        
+        <label for="name">Select Player to Sit Out:</label>
+        <select name="name" id="name">
+            {% for team in team1, team2 %}
+            {% for player in team %}
+            <option value="{{ player.id }}">{{ player.name }}</option>
+            {% endfor %}
+            {% endfor %}
+            <input type="submit" value="Submit">
+        </select>
+        </form>
+    </div>
+    <div class="cancel_sit_out">
+        <form action="/cancel_sit_out" method="POST">
+        
+        <label for="name">Select Player to Cancel Sit Out:</label>
+        <select name="name" id="name">
+            
+            {% for player in sitting_out %}
+            <option value="{{ player.id }}">{{ player.name }}</option>
+            {% endfor %}
+            <input type="submit" value="Submit">
+        </select>
+        </form>
+    </div>
+
+    <div class="end_session">
+        <form action="/end_session">
+            <input type="submit" value="End Session">
+        </form>
+    </div>
+
+    <div class="remove_all">
+        <form action="/remove_all" method="GET">
+            <input type="submit" value="remove_all">
+        </form>
+    </div>
+    <div class="populate_table">
+        <form action="/populate_table" method="POST">
+            <label for="number">Number:</label><br>
+            <input type="text" name="number" id="number" required> <br>
+            <input type="submit" value="Populate Table">
+        </form>
+    </div>
+    <div class="swap_positions">
+
+        <form action="/swap_positions" method="POST" id="'swap_positions">
+            <label for="swap_positions">Swap Positions:</label><br>
+            <select name="p1" id="p1">
+                {% for player in players %}
+                <option value="{{ player.id }}">{{ player.name }}</option>
+                
+                
+                {% endfor %}
+                
+            </select>
+            <select name="p2" id="p2">
+                {% for player in players %}
+                <option value="{{ player.id }}">{{ player.name }}</option>
+                
+                
+                {% endfor %}
+                
+            </select>
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+    <a href="/rules">rules</a>
+</body>
+
+
+    
